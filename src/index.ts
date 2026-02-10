@@ -10,12 +10,16 @@ export type PanelData = {
   datawrapperUrl: string;
 };
 
+export type PanelDefinition<Data> = {
+  data: Data;
+  nodes: Element[];
+  [key: string]: any;
+};
+
 let appMountEl: Mount;
 let appProps;
 
 whenOdysseyLoaded.then(() => {
-
-
   const scrollyData = loadScrollyteller<PanelData>(
     "datawrapper", // If set to eg. "one" use #scrollytellerNAMEone in CoreMedia
     "u-full", // Class to apply to mount point u-full makes it full width in Odyssey

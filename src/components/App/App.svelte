@@ -1,9 +1,7 @@
 <script lang="ts">
   import Scrollyteller from '@abcnews/svelte-scrollyteller';
-  import type { PanelDefinition } from '@abcnews/svelte-scrollyteller';
-  import type { PanelData } from '../../index';
+  import type { PanelDefinition, PanelData } from '../../index';
   import { untrack } from 'svelte';
-  import { fade } from 'svelte/transition';
 
   let { panels }: { panels: PanelDefinition<PanelData>[] } = $props();
   let data = $state(untrack(() => panels[0]?.data as PanelData));
