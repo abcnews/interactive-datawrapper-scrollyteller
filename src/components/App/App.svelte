@@ -23,7 +23,8 @@
   }}
 >
   {#each preloadUrls as url (url)}
-    <iframe src={url} title="" class:visible={url == data.datawrapperUrl}> </iframe>
+    <iframe src={url} title="" class:visible={url == data.datawrapperUrl} aria-hidden={url == data.datawrapperUrl}>
+    </iframe>
   {/each}
 </Scrollyteller>
 
@@ -39,6 +40,7 @@
     opacity: 0;
     &.visible {
       opacity: 1;
+      pointer-events: none;
     }
   }
 </style>
