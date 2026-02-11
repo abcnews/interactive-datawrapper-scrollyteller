@@ -45,7 +45,9 @@ whenOdysseyLoaded.then(() => {
   })
   mount(App, {
     target: scrollyData.mountNode,
-    props: { panels: modifiedPanels },
+    props: { panels: modifiedPanels,
+      mobileVariant: scrollyData.mountNode.id.includes('MOBILErows') ? 'rows' : 'blocks'
+     },
   })
 
 });

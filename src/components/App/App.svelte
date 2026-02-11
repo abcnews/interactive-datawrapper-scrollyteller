@@ -2,8 +2,10 @@
   import Scrollyteller from '@abcnews/svelte-scrollyteller';
   import type { PanelDefinition, PanelData } from '../../index';
   import { untrack } from 'svelte';
+  import DatawrapperIframe from '../DatawrapperIframe/DatawrapperIframe.svelte';
 
-  let { panels }: { panels: PanelDefinition<PanelData>[] } = $props();
+  let { panels, mobileVariant = 'rows' }: { panels: PanelDefinition<PanelData>[]; mobileVariant: 'blocks' | 'rows' } =
+    $props();
   let data = $state(untrack(() => panels[0]?.data as PanelData));
 
   const preloadUrls = $derived([
@@ -17,30 +19,16 @@
     data = newData;
   }}
   layout={{
-    align: 'left'
+    align: 'left',
+    mobileVariant: mobileVariant
     // resizeInteractive: true
     // transparentFloat: true
   }}
 >
   {#each preloadUrls as url (url)}
-    <iframe src={url} title="" class:visible={url == data.datawrapperUrl} aria-hidden={url == data.datawrapperUrl}>
-    </iframe>
+    <DatawrapperIframe src={url} visible={url == data.datawrapperUrl} />
   {/each}
 </Scrollyteller>
 
 <style lang="scss">
-  iframe {
-    border: none;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    transition: opacity 0.25s;
-    opacity: 0;
-    &.visible {
-      opacity: 1;
-      pointer-events: none;
-    }
-  }
 </style>
