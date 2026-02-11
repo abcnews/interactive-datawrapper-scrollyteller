@@ -36,10 +36,10 @@
     opacity: 0;
     transform: translateX(-50%);
     margin-top: 24px;
-    min-width: calc(100vw - 48px);
+    min-width: max(480px, calc(100vw - 48px));
     @media (min-width: 744px) {
       margin-top: 84px;
-      min-width: calc(100vw - 99px);
+      min-width: max(480px, calc(100vw - 99px));
     }
     @media (min-width: 993px) {
       margin-top: 0;
