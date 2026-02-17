@@ -15,6 +15,15 @@ export type PanelDefinition<Data> = {
   [key: string]: any;
 };
 
+// Attempt to stop datawrapper charts loading any further.
+// This doesn't shift the needle that much compared to loading=lazy
+const IFRAME_CLASS = 'interactive-datawrapper-scrollyteller';
+document.querySelectorAll<HTMLIFrameElement>('iframe[src*=datawrapper]').forEach(iframe => {
+  iframe.dataset.src = iframe.src;
+  iframe.src = 'about:blank';
+  iframe.classList.add(IFRAME_CLASS);
+});
+
 whenOdysseyLoaded.then(() => {
   // Select all scrollyteller mounts
   const scrollyMounts = selectMounts('scrollytellerNAMEdatawrapper', { markAsUsed: false });
@@ -24,23 +33,13 @@ whenOdysseyLoaded.then(() => {
     const scrollyName = getMountValue(mountEl, 'scrollytellerNAME');
     const scrollyData = loadScrollyteller<PanelData>(scrollyName, 'u-full', 'mark');
 
-    const cmid = window.location.pathname.match(/\/news\/....-..-..\/[^/]+\/(\d+)/)?.[1];
-    const password = scrollyData.mountNode?.getAttribute('id')?.match(/PASSWORD(\d+)/)?.[1] || '0';
-
-    // password is the CMID multiplied by two. We'll remove this check when we're sure this feature works.
-    if (Math.round(Number(password) / 2) !== Number(cmid)) {
-      console.log({ cmid, password });
-      console.error('Wrong password, sorry this is a prerelease feature.');
-      return;
-    }
-
     // Pull Datawrapper charts out of the panels and put them in as props
     let datawrapperUrl = '';
     const modifiedPanels = scrollyData.panels.map(panel => {
       const newNodes = panel.nodes.filter(node => {
-        const dwIframe = node.querySelector('iframe[src*=datawrapper]');
+        const dwIframe = node.querySelector<HTMLIFrameElement>(`iframe.${IFRAME_CLASS}`);
         if (dwIframe) {
-          datawrapperUrl = dwIframe.getAttribute('src') || '';
+          datawrapperUrl = dwIframe.dataset.src || '';
           return false;
         }
         return true;
