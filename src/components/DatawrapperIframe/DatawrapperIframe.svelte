@@ -51,6 +51,13 @@
     @media (min-width: 993px) and (min-height: 700px) {
       margin-top: 0;
       min-width: 480px;
+
+      // centre visually in the middle of the free space
+      // Warning: charts taller than the screen will be broken, and no amount
+      // of scrolling will fix them, so don't make tall charts pls.
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
     }
 
     &.visible {
