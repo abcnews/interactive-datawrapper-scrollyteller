@@ -13,7 +13,9 @@
   let { panels, mobileVariant = 'rows' }: Props = $props();
   let data = $state(untrack(() => panels[0]?.data as PanelData));
   let innerHeight = $state(window.innerHeight);
-  const uniqueIDs = $derived([...new Set(panels.map(p => p.data.datawrapperId as string).filter(Boolean))] as string[]);
+  const uniqueCharts = $derived([
+    ...new Set(panels.map(p => `${p.data.datawrapperId}/${p.data.datawrapperVersion}`).filter(s => s !== '/'))
+  ]);
 </script>
 
 <svelte:window bind:innerHeight />
@@ -31,15 +33,15 @@
   }}
 >
   <div class="charts">
-    {#each uniqueIDs as datawrapperId}
+    {#each uniqueCharts as chartKey}
+      {@const [chartId, chartVersion] = chartKey.split('/')}
       <div class="chart">
-        {#key datawrapperId}
-          <DatawrapperIframe
-            src="https://datawrapper.dwcdn.net/{datawrapperId}/1/"
-            current={datawrapperId === data.datawrapperId}
-            visible={uniqueIDs.indexOf(datawrapperId) <= uniqueIDs.indexOf(data.datawrapperId)}
-          />
-        {/key}
+        <DatawrapperIframe
+          src="https://datawrapper.dwcdn.net/{chartId}/{chartVersion}/"
+          current={chartId === data.datawrapperId && chartVersion === data.datawrapperVersion}
+          visible={uniqueCharts.indexOf(chartKey) <=
+            uniqueCharts.indexOf(`${data.datawrapperId}/${data.datawrapperVersion}`)}
+        />
       </div>
     {/each}
   </div>
