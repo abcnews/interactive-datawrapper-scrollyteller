@@ -1,5 +1,14 @@
 <script lang="ts">
-  let { src, visible }: { src: string; visible: boolean } = $props();
+  interface Props {
+    /** The URL of the Datawrapper chart. */
+    src: string;
+    /** Whether the iframe should be visually rendered (opacity 1). Older charts stay visible so new charts fade over the top. */
+    visible: boolean;
+    /** Whether this is the chart matching the current scrollyteller panel. Used to toggle aria-hidden for accessibility. */
+    current: boolean;
+  }
+
+  let { src, visible, current }: Props = $props();
 
   let iframeEl: HTMLIFrameElement | undefined = $state();
   let height = $state('400'); // Default height
@@ -22,7 +31,7 @@
 
 <svelte:window onmessage={handleMessage} />
 <div class="iframe-wrapper" class:visible>
-  <iframe bind:this={iframeEl} {src} title="" style:height="{height}px" aria-hidden={!visible} loading="lazy"></iframe>
+  <iframe bind:this={iframeEl} {src} title="" style:height="{height}px" aria-hidden={!current} loading="lazy"></iframe>
 </div>
 
 <style lang="scss">

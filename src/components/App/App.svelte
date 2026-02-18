@@ -4,14 +4,19 @@
   import { untrack } from 'svelte';
   import DatawrapperIframe from '../DatawrapperIframe/DatawrapperIframe.svelte';
 
-  let { panels, mobileVariant = 'rows' }: { panels: PanelDefinition<PanelData>[]; mobileVariant: 'blocks' | 'rows' } =
-    $props();
+  interface Props {
+    panels: PanelDefinition<PanelData>[];
+    mobileVariant?: 'blocks' | 'rows';
+  }
+
+  let { panels, mobileVariant = 'rows' }: Props = $props();
   let data = $state(untrack(() => panels[0]?.data as PanelData));
   let innerHeight = $state(window.innerHeight);
 
   const preloadUrls = $derived([
     ...new Set(panels.map(p => p.data.datawrapperUrl as string).filter(Boolean))
   ] as string[]);
+  const currentUrlIndex = $derived(preloadUrls.indexOf(data.datawrapperUrl as string));
 </script>
 
 <svelte:window bind:innerHeight />
@@ -28,7 +33,7 @@
     // transparentFloat: true
   }}
 >
-  {#each preloadUrls as url (url)}
-    <DatawrapperIframe src={url} visible={url == data.datawrapperUrl} />
+  {#each preloadUrls as url, index (url)}
+    <DatawrapperIframe src={url} visible={index <= currentUrlIndex} current={url === data.datawrapperUrl} />
   {/each}
 </Scrollyteller>
