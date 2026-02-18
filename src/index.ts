@@ -4,9 +4,11 @@ import type { Mount } from '@abcnews/mount-utils';
 import { loadScrollyteller } from '@abcnews/svelte-scrollyteller';
 import App from './components/App/App.svelte';
 import { mount } from 'svelte';
+import DatawrapperIframe from './components/DatawrapperIframe/DatawrapperIframe.svelte';
+import LazyIframe from './components/LazyIframe/LazyIframe.svelte';
 
 export type PanelData = {
-  datawrapperUrl: string;
+  datawrapperId: string;
 };
 
 export type PanelDefinition<Data> = {
@@ -15,16 +17,15 @@ export type PanelDefinition<Data> = {
   [key: string]: any;
 };
 
-function go() {
-  // Attempt to stop datawrapper charts loading any further.
-  // This doesn't shift the needle that much compared to loading=lazy
-  const IFRAME_CLASS = 'interactive-datawrapper-scrollyteller';
-  document.querySelectorAll<HTMLIFrameElement>('iframe[src*=datawrapper]').forEach(iframe => {
-    iframe.dataset.src = iframe.src;
-    iframe.src = 'about:blank';
-    iframe.classList.add(IFRAME_CLASS);
-  });
+function getDatawrapperId(node) {
+  if ((node as HTMLDivElement).dataset.component === 'Anchor' && node.id.match(/^chart/)) {
+    const id = node.id.slice(5);
+    return id;
+  }
+  return null;
+}
 
+function go() {
   whenOdysseyLoaded.then(() => {
     // Select all scrollyteller mounts
     const scrollyMounts = selectMounts('scrollytellerNAMEdatawrapper', { markAsUsed: false });
@@ -35,19 +36,20 @@ function go() {
       const scrollyData = loadScrollyteller<PanelData>(scrollyName, 'u-full', 'mark');
 
       // Pull Datawrapper charts out of the panels and put them in as props
-      let datawrapperUrl = '';
+      let datawrapperId = '';
       const modifiedPanels = scrollyData.panels.map(panel => {
         const newNodes = panel.nodes.filter(node => {
-          const dwIframe = node.querySelector<HTMLIFrameElement>(`iframe.${IFRAME_CLASS}`);
-          if (dwIframe) {
-            datawrapperUrl = dwIframe.dataset.src || '';
+          const id = getDatawrapperId(node);
+          if (id) {
+            datawrapperId = id;
+            node.parentElement?.removeChild(node);
             return false;
           }
           return true;
         });
         return {
           ...panel,
-          data: { ...panel.data, datawrapperUrl },
+          data: { ...panel.data, datawrapperId },
           nodes: newNodes
         };
       });
@@ -59,6 +61,22 @@ function go() {
           mobileVariant: scrollyData.mountNode.id.includes('MOBILErows') ? 'rows' : 'blocks'
         }
       });
+    });
+  });
+
+  document.querySelectorAll<HTMLElement>(`[data-component="Anchor"]`)?.forEach(node => {
+    const id = getDatawrapperId(node);
+    if (!id || !node.parentElement) {
+      return;
+    }
+    const chartUrl = `https://datawrapper.dwcdn.net/${id}/1/`;
+    mount(LazyIframe, {
+      target: node,
+      props: {
+        src: chartUrl,
+        visible: true,
+        current: true
+      }
     });
   });
 }

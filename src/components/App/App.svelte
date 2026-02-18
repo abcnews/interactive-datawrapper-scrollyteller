@@ -2,6 +2,7 @@
   import Scrollyteller from '@abcnews/svelte-scrollyteller';
   import type { PanelDefinition, PanelData } from '../../index';
   import { untrack } from 'svelte';
+  import DatawrapperWithScript from '../DatawrapperWithScript/DatawrapperWithScript.svelte';
   import DatawrapperIframe from '../DatawrapperIframe/DatawrapperIframe.svelte';
 
   interface Props {
@@ -12,11 +13,7 @@
   let { panels, mobileVariant = 'rows' }: Props = $props();
   let data = $state(untrack(() => panels[0]?.data as PanelData));
   let innerHeight = $state(window.innerHeight);
-
-  const preloadUrls = $derived([
-    ...new Set(panels.map(p => p.data.datawrapperUrl as string).filter(Boolean))
-  ] as string[]);
-  const currentUrlIndex = $derived(preloadUrls.indexOf(data.datawrapperUrl as string));
+  const uniqueIDs = $derived([...new Set(panels.map(p => p.data.datawrapperId as string).filter(Boolean))] as string[]);
 </script>
 
 <svelte:window bind:innerHeight />
@@ -33,7 +30,24 @@
     // transparentFloat: true
   }}
 >
-  {#each preloadUrls as url, index (url)}
-    <DatawrapperIframe src={url} visible={index <= currentUrlIndex} current={url === data.datawrapperUrl} />
-  {/each}
+  <div class="charts">
+    {#each uniqueIDs as datawrapperId}
+      <div class="chart">
+        {#key datawrapperId}
+          <DatawrapperIframe
+            src="https://datawrapper.dwcdn.net/{datawrapperId}/1/"
+            current={datawrapperId === data.datawrapperId}
+            visible={uniqueIDs.indexOf(datawrapperId) <= uniqueIDs.indexOf(data.datawrapperId)}
+          />
+        {/key}
+      </div>
+    {/each}
+  </div>
 </Scrollyteller>
+
+<style lang="scss">
+  .chart {
+    width: 100%;
+    height: 100%;
+  }
+</style>
