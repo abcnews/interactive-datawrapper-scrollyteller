@@ -2,7 +2,6 @@
   import Scrollyteller from '@abcnews/svelte-scrollyteller';
   import type { PanelDefinition, PanelData } from '../../index';
   import { untrack } from 'svelte';
-  import DatawrapperWithScript from '../DatawrapperWithScript/DatawrapperWithScript.svelte';
   import DatawrapperIframe from '../DatawrapperIframe/DatawrapperIframe.svelte';
 
   interface Props {

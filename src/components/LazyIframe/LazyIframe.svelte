@@ -21,17 +21,18 @@
    * We use an effect to handle the viewport detection.
    */
   $effect(() => {
-    if (!container || hasEnteredViewport) return;
+    if (!container) return;
 
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0].isIntersecting) {
-          hasEnteredViewport = true;
-          observer.disconnect();
+        const isIntersecting = entries[0].isIntersecting;
+        if (isIntersecting !== hasEnteredViewport) {
+          console.debug(`[LazyIframe] ${isIntersecting ? 'Loading' : 'Unloading'} frame: ${src}`);
         }
+        hasEnteredViewport = isIntersecting;
       },
       {
-        rootMargin: '100% 0px' // Load when within 1 screen height
+        rootMargin: '100% 0px' // Load/unload when within 1 screen height
       }
     );
 
@@ -46,8 +47,9 @@
    * Handle messages from Datawrapper for auto-resizing.
    */
   const handleMessage = (event: MessageEvent) => {
-    if (typeof event.data['datawrapper-height'] !== 'undefined' && iframeEl) {
-      if (iframeEl.contentWindow === event.source) {
+    if (typeof event.data['datawrapper-height'] !== 'undefined') {
+      // Check if the message came from our iframe (if it exists)
+      if (iframeEl && iframeEl.contentWindow === event.source) {
         for (const chartId in event.data['datawrapper-height']) {
           height = event.data['datawrapper-height'][chartId] + 20;
         }
@@ -58,7 +60,7 @@
 
 <svelte:window onmessage={handleMessage} />
 
-<div bind:this={container} class="lazy-iframe-container {className}">
+<div bind:this={container} class="lazy-iframe-container {className}" style:height="{height}px">
   {#if hasEnteredViewport}
     <iframe bind:this={iframeEl} {src} {title} style:height="{height}px" aria-hidden={!current}></iframe>
   {/if}
