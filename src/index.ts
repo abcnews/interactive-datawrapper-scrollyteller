@@ -7,6 +7,8 @@ import DatawrapperIframe from './components/DatawrapperIframe/DatawrapperIframe.
 import LazyIframe from './components/LazyIframe/LazyIframe.svelte';
 import { logger } from './utils/logger';
 
+const MIN_SCREEN_SCROLLY = 350;
+
 export type PanelData = {
   datawrapperId: string;
   datawrapperVersion: string;
@@ -28,8 +30,7 @@ function getDatawrapperId(node) {
   return { id: null, version: null };
 }
 
-async function go() {
-  await whenOdysseyLoaded;
+function initScrollyteller() {
   // Select all scrollyteller mounts
   const scrollyMounts = selectMounts('scrollytellerNAMEdatawrapper', { markAsUsed: false });
 
@@ -63,10 +64,19 @@ async function go() {
       target: scrollyData.mountNode,
       props: {
         panels: modifiedPanels,
-        mobileVariant: scrollyData.mountNode.id.includes('MOBILErows') ? 'rows' : 'blocks'
+        mobileVariant: 'blocks'
+        // mobileVariant: scrollyData.mountNode.id.includes('MOBILErows') ? 'rows' : 'blocks'
       }
     });
   });
+}
+
+async function go() {
+  await whenOdysseyLoaded;
+  // @ts-ignore
+  if (window.visualViewport?.height > MIN_SCREEN_SCROLLY) {
+    initScrollyteller();
+  }
 
   document.querySelectorAll<HTMLElement>(`[data-component="Anchor"]`)?.forEach(node => {
     const { id, version } = getDatawrapperId(node);
