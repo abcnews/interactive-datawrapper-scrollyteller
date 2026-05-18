@@ -11,7 +11,6 @@ const MIN_SCREEN_SCROLLY = 350;
 
 export type PanelData = {
   datawrapperId: string;
-  datawrapperVersion: string;
 };
 
 export type PanelDefinition<Data> = {
@@ -20,14 +19,19 @@ export type PanelDefinition<Data> = {
   [key: string]: any;
 };
 
-function getDatawrapperId(node) {
+/**
+ * Extracts the Datawrapper chart ID from a given DOM element.
+ * Assumes the entire suffix after the 'chart' prefix is the chart ID.
+ *
+ * @param node The DOM element to check.
+ * @returns The extracted Datawrapper ID or null if not a matching anchor.
+ */
+function getDatawrapperId(node: Element) {
   if ((node as HTMLDivElement).dataset.component === 'Anchor' && node.id.match(/^chart/)) {
-    const fullId = node.id.slice(5); // remove 'chart' prefix
-    const id = fullId.slice(0, 5);
-    const version = fullId.slice(5) || '1';
-    return { id, version };
+    const id = node.id.slice(5); // remove 'chart' prefix
+    return { id };
   }
-  return { id: null, version: null };
+  return { id: null };
 }
 
 function initScrollyteller() {
@@ -39,15 +43,14 @@ function initScrollyteller() {
     const scrollyName = getMountValue(mountEl, 'scrollytellerNAME');
     const scrollyData = loadScrollyteller<PanelData>(scrollyName, 'u-full', 'mark');
 
-    // Pull Datawrapper charts out of the panels and put them in as props
+    // Pull Datawrapper charts out of the panels and put them in as props.
+    // We only need the chart ID, as version numbers are no longer required on the URL.
     let datawrapperId = '';
-    let datawrapperVersion = '';
     const modifiedPanels = scrollyData.panels.map(panel => {
       const newNodes = panel.nodes.filter(node => {
         const result = getDatawrapperId(node);
         if (result.id) {
           datawrapperId = result.id;
-          datawrapperVersion = result.version;
           node.parentElement?.removeChild(node);
           return false;
         }
@@ -55,7 +58,7 @@ function initScrollyteller() {
       });
       return {
         ...panel,
-        data: { ...panel.data, datawrapperId, datawrapperVersion },
+        data: { ...panel.data, datawrapperId },
         nodes: newNodes
       };
     });
@@ -79,13 +82,16 @@ async function go() {
   }
 
   document.querySelectorAll<HTMLElement>(`[data-component="Anchor"]`)?.forEach(node => {
-    const { id, version } = getDatawrapperId(node);
+    const { id } = getDatawrapperId(node);
     if (!id || !node.parentElement) {
       return;
     }
     node.dataset.mount = undefined;
     node.style.padding = '16px';
-    const chartUrl = `https://datawrapper.dwcdn.net/${id}/${version}/?dark=false`;
+
+    // Construct the URL without the version number, letting Datawrapper
+    // handle redirection to the latest chart version automatically.
+    const chartUrl = `https://datawrapper.dwcdn.net/${id}/?dark=false`;
     mount(LazyIframe, {
       target: node,
       props: {

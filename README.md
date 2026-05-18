@@ -1,3 +1,3 @@
 # interactive-datawrapper-scrollyteller
 
-A project generated from [aunty](https://github.com/abcnews/aunty)'s `svelte` project template.
+This project integrates Datawrapper charts into scrollyteller panels. It extracts Datawrapper anchors from panels and renders them as responsive iframes using a lazy loading approach to prevent double-loading and slowdowns when loading multiple embeds.

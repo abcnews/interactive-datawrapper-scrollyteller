@@ -14,19 +14,16 @@
   let data = $state(untrack(() => panels[0]?.data as PanelData));
   let innerHeight = $state(window.innerHeight);
   const framesToRender = $derived.by(() => {
-    const keys = [
-      ...new Set(panels.map(p => `${p.data.datawrapperId}/${p.data.datawrapperVersion}`).filter(s => s !== '/'))
+    const chartIds = [
+      ...new Set(panels.map(p => p.data.datawrapperId).filter(Boolean))
     ];
-    const currentKey = `${data.datawrapperId}/${data.datawrapperVersion}`;
-    const activeIndex = keys.indexOf(currentKey);
+    const currentChartId = data.datawrapperId;
+    const activeIndex = chartIds.indexOf(currentChartId);
 
-    return keys
-      .map((key, index) => {
-        const [chartId, chartVersion] = key.split('/');
+    return chartIds
+      .map((chartId, index) => {
         return {
-          key,
           chartId,
-          chartVersion,
           index,
           isCurrent: index === activeIndex,
           isVisible: index <= activeIndex
@@ -55,11 +52,11 @@
   }}
 >
   <div class="charts">
-    {#each framesToRender as frame (frame.key)}
+    {#each framesToRender as frame (frame.chartId)}
       <div class="chart">
         {#key frame.chartId}
           <DatawrapperIframe
-            src="https://datawrapper.dwcdn.net/{frame.chartId}/{frame.chartVersion}/?dark=false"
+            src="https://datawrapper.dwcdn.net/{frame.chartId}/?dark=false"
             current={frame.isCurrent}
             visible={frame.isVisible}
           />
