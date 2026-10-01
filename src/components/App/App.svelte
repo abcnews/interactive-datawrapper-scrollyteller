@@ -41,7 +41,9 @@
 
 <Scrollyteller
   {panels}
-  bind:marker={data}
+  onMarker={newData => {
+    data = newData;
+  }}
   layout={{
     align: 'left',
     mobileVariant: innerHeight < 667 ? 'blocks' : mobileVariant
