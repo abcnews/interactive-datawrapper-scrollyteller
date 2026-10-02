@@ -1,41 +1,52 @@
 {
-	"name": "interactive-datawrapper-scrollyteller",
-	"version": "2.2.2",
-	"description": "A project generated from aunty's svelte project template.",
-	"license": "MIT",
-	"private": true,
-	"contributors": [
-		"Ash Kyd <kyd.ashley@abc.net.au>"
-	],
-	"aunty": {
-		"type": "svelte",
-		"build": {
-			"entry": [
-				"index"
-			],
-			"includedDependencies": [
-				"@abcnews/svelte-scrollyteller"
-			]
-		}
-	},
-	"scripts": {
-		"start": "aunty serve",
-		"dev": "aunty serve",
-		"test": "aunty test"
-	},
-	"devDependencies": {
-		"@abcnews/aunty": "^16.0.1",
-		"@testing-library/svelte": "^5.3.1",
-		"@types/jest": "^30.0.0",
-		"@types/webpack-env": "^1.18.8"
-	},
-	"dependencies": {
-		"@abcnews/alternating-case-to-object": "^3.2.0",
-		"@abcnews/env-utils": "^6.0.0",
-		"@abcnews/mount-utils": "^3.0.0",
-		"@abcnews/svelte-scrollyteller": "^3.0.1",
-		"async": "^3.2.6",
-		"mocha": "^11.7.5",
-		"svelte": "^5.50.0"
-	}
+  "name": "interactive-datawrapper-scrollyteller",
+  "version": "2.2.2",
+  "description": "A project generated from aunty's svelte project template.",
+  "license": "MIT",
+  "private": true,
+  "contributors": [
+    "Ash Kyd <kyd.ashley@abc.net.au>"
+  ],
+  "aunty": {
+    "type": "svelte",
+    "build": {
+      "entry": [
+        "index"
+      ],
+      "includedDependencies": [
+        "@abcnews/svelte-scrollyteller"
+      ]
+    }
+  },
+  "scripts": {
+    "dev": "vite serve",
+    "test": "aunty test",
+    "build": "vite build",
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@abcnews/aunty": "^17.0.0-next.10",
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "@testing-library/svelte": "^5.3.1",
+    "@tsconfig/svelte": "^5.0.8",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.12.0",
+    "@types/webpack-env": "^1.18.8",
+    "prettier-plugin-svelte": "^3.5.1",
+    "svelte": "^5.53.12",
+    "svelte-check": "^4.4.5",
+    "typescript": "~5.9.3",
+    "vite": "^8.0.1"
+  },
+  "dependencies": {
+    "@abcnews/alternating-case-to-object": "^3.2.0",
+    "@abcnews/env-utils": "^6.0.0",
+    "@abcnews/mount-utils": "^3.0.1",
+    "@abcnews/svelte-scrollyteller": "^3.0.1",
+    "async": "^3.2.6",
+    "mocha": "^11.7.5",
+    "svelte": "^5.50.0"
+  },
+  "type": "module"
 }

@@ -34,7 +34,7 @@
     opacity: 0;
     &.visible {
       opacity: 1;
-      pointer-events: auto; // Changed from none to allow interaction if visible
+      pointer-events: auto; /* Changed from none to allow interaction if visible */
     }
 
     &:not(.visible) {
