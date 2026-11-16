@@ -104,7 +104,3 @@ async function go() {
 }
 
 go();
-
-if (process.env.NODE_ENV === 'development') {
-  logger.debug(`[interactive-datawrapper-scrollyteller] public path: ${__webpack_public_path__}`);
-}
