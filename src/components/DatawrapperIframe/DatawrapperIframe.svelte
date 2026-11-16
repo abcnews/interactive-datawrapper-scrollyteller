@@ -14,7 +14,7 @@
 </script>
 
 <div class="iframe-wrapper" class:visible>
-  <LazyIframe {src} {current} className="scrolly-chart" />
+  <LazyIframe {src} {current} className="datawrapper-chart" />
 </div>
 
 <style lang="scss">
