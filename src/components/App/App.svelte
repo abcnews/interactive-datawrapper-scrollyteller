@@ -14,9 +14,7 @@
   let data = $state(untrack(() => panels[0]?.data as PanelData));
   let innerHeight = $state(window.innerHeight);
   const framesToRender = $derived.by(() => {
-    const chartIds = [
-      ...new Set(panels.map(p => p.data.datawrapperId).filter(Boolean))
-    ];
+    const chartIds = [...new Set(panels.map(p => p.data.datawrapperId).filter(Boolean))];
     const currentChartId = data.datawrapperId;
     const activeIndex = chartIds.indexOf(currentChartId);
 
@@ -41,9 +39,7 @@
 
 <Scrollyteller
   {panels}
-  onMarker={newData => {
-    data = newData;
-  }}
+  bind:marker={data}
   layout={{
     align: 'left',
     mobileVariant: innerHeight < 667 ? 'blocks' : mobileVariant
